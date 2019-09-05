@@ -1,9 +1,31 @@
-const textbox = document.querySelector('input');
+let dataStack = [];
 
+const textbox = document.querySelector('input');
 textbox.onkeyup = handleEvent;
+
 
 function handleEvent(e) {
     if (e.code === 'Enter') {
-        
+        const text = textbox.value;
+        textbox.value = '';
+
+        try {
+            execute(text, dataStack);
+        } 
+        catch (e) {
+            put('Error: ' + e.message);
+            return;
+        }
+
+        put(dataStack.string());
     }
+}
+
+function put(text) {
+    const output = document.getElementById('output');
+    output.innerHTML += ' ' + text + '<br>';
+    output.innerText += '>';
+    
+    const prompt = document.getElementById('prompt');
+    prompt.scrollTop = prompt.scrollHeight;
 }

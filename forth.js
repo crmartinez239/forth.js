@@ -1,3 +1,5 @@
+// delcare a empty 
+
 // error classes
 class ParseError extends Error {
     constructor(message, rawText) {
@@ -99,7 +101,7 @@ function operate(var1, var2, type) {
 
 // main logic function of program
 // all checks and changes to stack should be performed here
-function execute(text) {
+function execute(text, dataStack) {
     const stream = text.split(' ').filter(word => word != '');
     for (word of stream) {
         t = parseData(word);
@@ -138,7 +140,4 @@ function execute(text) {
     }
 }
 
-var dataStack = [];
 
-// execute('3 3 4 + ');
-// console.log(dataStack.string());

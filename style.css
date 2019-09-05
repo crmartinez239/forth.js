@@ -3,6 +3,8 @@
     background-color: midnightblue;
     width: 50vw;
     height: 50vh;
+    overflow: auto;
+    overflow-anchor: none;
 }
 
 #output {

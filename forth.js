@@ -53,7 +53,7 @@ const dataTypes = {
 const Token = (type, value, text) => 
     ({ type: type, value: value, text: text});
 
-function parseData(text) {
+function parseWord(text) {
     let data = text.trim();
     let val = Number(data);
     
@@ -105,7 +105,7 @@ function operate(var1, var2, type) {
 function execute(text, dataStack) {
     const stream = text.split(' ').filter(word => word != '');
     for (word of stream) {
-        t = parseData(word);
+        t = parseWord(word);
 
         // invalid syntax
         if (t.type == dataTypes.INVALID) {

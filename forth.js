@@ -73,10 +73,10 @@ function parseData(text) {
             type = dataTypes.DIV;
             break;
         default:
-            return Token(dataTypes.INVALID, -1, 'Invalid word');
+            return Token(dataTypes.INVALID, undefined, 'Invalid word');
     }
 
-    return Token(type, -1, 'Operand');
+    return Token(type, undefined, 'Operand');
 }
 
 // will either return a new number value

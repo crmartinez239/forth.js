@@ -1,10 +1,14 @@
-// delcare a empty 
+const errorTypes = {
+    PARSE: 'ParseError',
+    STACK: 'StackError',
+    OPERATION: 'OperationError'
+};
 
 // error classes
 class ParseError extends Error {
     constructor(message, rawText) {
         super(message);
-        this.name = 'ParseError';
+        this.name = errorTypes.PARSE;
         this.rawText = rawText;
     }
 }
@@ -12,14 +16,14 @@ class ParseError extends Error {
 class StackError extends Error {
     constructor(message) {
         super(message);
-        this.name = 'StackError';
+        this.name = errorTypes.STACK;
     }
 }
 
 class OperationError extends Error {
     constructor(message) {
         super(message);
-        this.name = 'OperationError';
+        this.name = errorTypes.OPERATION;
     }
 }
 

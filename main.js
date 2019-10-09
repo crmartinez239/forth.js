@@ -13,7 +13,7 @@ function handleEvent(e) {
             execute(text, dataStack);
         } 
         catch (e) {
-            if (e.name == 'ParseError') {
+            if (e.name === errorTypes.PARSE) {
                 put(`Parsing Error: ${e.message} - ${e.rawText}`)
             } else {
                 put('Error: ' + e.message);

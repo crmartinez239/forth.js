@@ -46,7 +46,7 @@ const dataTypes = {
 };
 
 // token constructor
-const token = (type, value, text) => 
+const Token = (type, value, text) => 
     ({ type: type, value: value, text: text});
 
 function parseData(text) {
@@ -54,7 +54,7 @@ function parseData(text) {
     let val = Number(data);
     
     if (!isNaN(val)) {
-        return token(dataTypes.VALUE, val, data);
+        return Token(dataTypes.VALUE, val, data);
     }
 
     let type;
@@ -73,10 +73,10 @@ function parseData(text) {
             type = dataTypes.DIV;
             break;
         default:
-            return token(dataTypes.INVALID, -1, 'Invalid word');
+            return Token(dataTypes.INVALID, -1, 'Invalid word');
     }
 
-    return token(type, -1, 'Operand');
+    return Token(type, -1, 'Operand');
 }
 
 // will either return a new number value
@@ -132,7 +132,7 @@ function execute(text, dataStack) {
         // but just in case??
         if (!isNaN(newVar)) {
             dataStack.push(
-                token(dataTypes.VALUE, newVar, newVar.toString()));
+                Token(dataTypes.VALUE, newVar, newVar.toString()));
         }
     }
 }

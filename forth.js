@@ -5,7 +5,6 @@ class ParseError extends Error {
     constructor(message, rawText) {
         super(message);
         this.name = 'ParseError';
-        this.message = message;
         this.rawText = rawText;
     }
 }
@@ -14,7 +13,6 @@ class StackError extends Error {
     constructor(message) {
         super(message);
         this.name = 'StackError';
-        this.message = message;
     }
 }
 
@@ -22,7 +20,6 @@ class OperationError extends Error {
     constructor(message) {
         super(message);
         this.name = 'OperationError';
-        this.message = message;
     }
 }
 

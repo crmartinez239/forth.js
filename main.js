@@ -27,8 +27,7 @@ function handleEvent(e) {
 
 function put(text) {
     const output = document.getElementById('output');
-    output.innerHTML += ' ' + text + '<br>';
-    output.innerText += '>';
+    output.innerHTML += '> ' + text + '<br>';
     
     const prompt = document.getElementById('prompt');
     prompt.scrollTop = prompt.scrollHeight;

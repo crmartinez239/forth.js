@@ -27,12 +27,14 @@ class OperationError extends Error {
 }
 
 const dataTypes = {
-    ADD: 0,
-    SUB: 1,
-    MUL: 2,
-    DIV: 3,
-    VALUE: 4,
-    INVALID: 5
+    INVALID: 0,
+    VALUE: 1,
+    ADD: 2,
+    SUB: 3,
+    MUL: 4,
+    DIV: 5,
+    POWER: 6,
+    MODULUS: 7
 };
 
 const statusTypes = {
@@ -45,8 +47,8 @@ const Token = (type, value, text) =>
     ({ type: type, value: value, text: text});
 
 class Fvm {
-    constructor(stack) {
-        this.stack = stack;
+    constructor() {
+        this.stack = [];
         this.status = statusTypes.OK;
     }
 
@@ -54,8 +56,8 @@ class Fvm {
     // all checks and changes to stack should be performed here
     execute(text) {
         const stream = text.split(' ').filter(word => word != '');
-        for (word of stream) {
-            t = this.parseWord(word);
+        for (let word of stream) {
+            let t = this.parseWord(word);
 
             // invalid syntax
             if (t.type == dataTypes.INVALID) {
@@ -82,7 +84,7 @@ class Fvm {
             // perform operation on stack
             let topVar = this.stack.pop();
             let bottomVar = this.stack.pop();
-            let newVar = operate(topVar.value, bottomVar.value, t.type);
+            let newVar = this.operate(topVar.value, bottomVar.value, t.type);
 
             // I don't think newVar will ever be NaN
             // but just in case??
@@ -90,7 +92,9 @@ class Fvm {
                 this.stack.push(
                     Token(dataTypes.VALUE, newVar, newVar.toString()));
             }
+            
         }
+        this.status = statusTypes.OK;
     }
 
     parseWord(text) {
@@ -113,8 +117,14 @@ class Fvm {
             case '*':
                 type = dataTypes.MUL;
                 break;
+            case '**':
+                type = dataTypes.POWER
+                break;
             case '/':
                 type = dataTypes.DIV;
+                break;
+            case '%':
+                type = dataTypes.MODULUS;
                 break;
             default:
                 return Token(dataTypes.INVALID, undefined, 'Invalid word');
@@ -137,22 +147,21 @@ class Fvm {
                     throw new OperationError('Divide by zero');
                 }
                 return var1 / var2;
+            case dataTypes.POWER:
+                return Math.pow(var2, var1);
+            case dataTypes.MODULUS:
+                return var1 % var2;
         }
     }
+
+    stackToString() {
+        let ret = '';
+        this.stack.forEach(obj => {
+            ret += obj.value + ' '
+        })
+        return ret.trim();
+    }
 }
-
-// extend Array functionality for our stack data structure
-Array.prototype.peek = function () {
-   return this[this.length - 1];
-} 
-
-Array.prototype.string = function() {   
-    let ret = '';
-    this.forEach(obj => {
-        ret += obj.value + ' '
-    })
-    return ret.trim();
-};
 
 
 

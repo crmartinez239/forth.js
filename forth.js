@@ -4,6 +4,12 @@ const ErrorTypes = {
     OPERATION: 'OperationError'
 };
 
+const ErrorMessages = {
+    INVALID_WORD: 'Invalid word',
+    STACK_UNDERFLOW: 'Stack underflow',
+    DIV_BY_ZERO: 'Divide by zero'
+}
+
 class ParseError extends Error {
     constructor(message, rawText) {
         super(message);
@@ -42,13 +48,40 @@ const StatusTypes = {
     ERROR: '?'
 };
 
-// token constructor
-const Token = (type, value, text) => 
-    ({ type: type, value: value, text: text});
+const WordTypes = {
+    NUMBER: 1,
+    MATH: 2
+}
+
+class Word {
+    constructor(rawText) {
+        this.rawText = rawText;
+    }
+}
+
+class MathWord extends Word {
+    constructor(rawText, type) {
+        super(rawText);
+        this.type = type
+    }
+}
+
+class NumberWord extends Word {
+    constructor(rawText, value) {
+        super(rawText);
+        this.value = value;
+    }
+}
+
+class InvalidWord extends Word {
+    constructor(rawText) {
+        super(rawText);
+    }
+}
 
 class Fvm {
     constructor() {
-        this.stack = [];
+        this.numberStack = [];
         this.status = StatusTypes.OK;
     }
 
@@ -57,40 +90,21 @@ class Fvm {
     execute(text) {
         const stream = text.split(' ').filter(word => word != '');
         for (let word of stream) {
-            let t = this.parseWord(word);
+            const w = this.parseWord(word);
 
-            // invalid syntax
-            if (t.type == MathTypes.INVALID) {
+            if (w instanceof InvalidWord) {
                 this.status = StatusTypes.ERROR;
-                throw new ParseError(t.text, word);
+                throw new ParseError(ErrorMessages.INVALID_WORD, w.rawText)
             }
 
-            // push value onto stack
-            if (t.type == MathTypes.VALUE) {
-                this.stack.push(t);
+            if (w instanceof NumberWord) {
+                this.numberStack.push(w.value);
                 continue;
             }
 
-            // empty stack error
-            if (this.stack.length == 0) {
-                this.status = StatusTypes.ERROR;
-                throw new StackError('Stack underflow');
-            }
-            if (this.stack.length == 1) {
-                this.stack.pop();
+            if (w instanceof MathWord) {
+                this.attemptMathOperation(w.type)
                 continue;
-            }
-
-            // perform operation on stack
-            let topVar = this.stack.pop();
-            let bottomVar = this.stack.pop();
-            let newVar = this.operate(topVar.value, bottomVar.value, t.type);
-
-            // I don't think newVar will ever be NaN
-            // but just in case??
-            if (!isNaN(newVar)) {
-                this.stack.push(
-                    Token(MathTypes.VALUE, newVar, newVar.toString()));
             }
             
         }
@@ -98,39 +112,19 @@ class Fvm {
     }
 
     parseWord(text) {
-        let data = text.trim();
-        let val = Number(data);
+        let word = text.trim();
+        let val = Number(word);
         
         if (!isNaN(val)) {
-            return Token(MathTypes.VALUE, val, data);
+            return new NumberWord(word, val)
         }
     
-        let type;
-    
-        switch (data) {
-            case '+':
-                type = MathTypes.ADD;
-                break;
-            case '-':
-                type = MathTypes.SUB;
-                break;
-            case '*':
-                type = MathTypes.MUL;
-                break;
-            case '**':
-                type = MathTypes.POWER
-                break;
-            case '/':
-                type = MathTypes.DIV;
-                break;
-            case '%':
-                type = MathTypes.MODULUS;
-                break;
-            default:
-                return Token(MathTypes.INVALID, undefined, 'Invalid word');
+        if (this.isMathOperator(word)) {
+            const type = this.getMathOperatorType(word)
+            return new MathWord(word, type)
         }
-    
-        return Token(type, undefined, 'Operand');
+        
+        return new  InvalidWord(word);
     }
 
     // will either return a new number value
@@ -144,7 +138,7 @@ class Fvm {
                 return var1 * var2;
             case MathTypes.DIV:
                 if (var1 == 0 || var2 == 0) {
-                    throw new OperationError('Divide by zero');
+                    throw new OperationError(ErrorMessages.DIV_BY_ZERO);
                 }
                 return var1 / var2;
             case MathTypes.POWER:
@@ -154,10 +148,61 @@ class Fvm {
         }
     }
 
+    isMathOperator(word) {
+        switch (word) {
+            case '+': 
+            case '-':
+            case '*': 
+            case '**': 
+            case '/': 
+            case '%':
+                return true;
+           default:
+                return false;
+        }
+    }
+
+    getMathOperatorType(word) {
+        switch (word) {
+            case '+':
+                return MathTypes.ADD;
+            case '-':
+                return MathTypes.SUB;
+            case '*':
+                return MathTypes.MUL;
+            case '**':
+                return MathTypes.POWER
+            case '/':
+                return MathTypes.DIV;
+            case '%':
+                return MathTypes.MODULUS;
+        }
+    }
+
+    attemptMathOperation(type) {
+        // empty stack error
+        if (this.numberStack.length == 0) {
+            this.status = StatusTypes.ERROR;
+            throw new StackError(ErrorMessages.STACK_UNDERFLOW);
+        }
+        
+        if (this.numberStack.length == 1) {
+            this.numberStack.pop();
+            return;
+        }
+
+        // perform operation on stack
+        const topVar = this.numberStack.pop();
+        const bottomVar = this.numberStack.pop();
+        const newVar = this.operate(topVar, bottomVar, type);
+
+        this.numberStack.push(newVar);
+    }
+
     stackToString() {
         let ret = '';
-        this.stack.forEach(obj => {
-            ret += obj.value + ' '
+        this.numberStack.forEach(n => {
+            ret += n + ' '
         })
         return ret.trim();
     }

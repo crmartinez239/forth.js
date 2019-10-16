@@ -13,12 +13,12 @@ function handleEvent(e) {
             fvm.execute(text);
         } 
         catch (e) {
-            if (e.name === errorTypes.STACK || e.name === errorTypes.OPERATION) {
+            if (e.name === ErrorTypes.STACK || e.name === ErrorTypes.OPERATION) {
                 put(`Error: ${e.message}`)
                 return
             }
 
-            if (e.name === errorTypes.PARSE) {
+            if (e.name === ErrorTypes.PARSE) {
                 put(`Parsing Error: ${e.message} - ${e.rawText}`);
                 return
             }

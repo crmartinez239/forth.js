@@ -1,4 +1,4 @@
-const errorTypes = {
+const ErrorTypes = {
     PARSE: 'ParseError',
     STACK: 'StackError',
     OPERATION: 'OperationError'
@@ -7,7 +7,7 @@ const errorTypes = {
 class ParseError extends Error {
     constructor(message, rawText) {
         super(message);
-        this.name = errorTypes.PARSE;
+        this.name = ErrorTypes.PARSE;
         this.rawText = rawText;
     }
 }
@@ -15,18 +15,18 @@ class ParseError extends Error {
 class StackError extends Error {
     constructor(message) {
         super(message);
-        this.name = errorTypes.STACK;
+        this.name = ErrorTypes.STACK;
     }
 }
 
 class OperationError extends Error {
     constructor(message) {
         super(message);
-        this.name = errorTypes.OPERATION;
+        this.name = ErrorTypes.OPERATION;
     }
 }
 
-const dataTypes = {
+const MathTypes = {
     INVALID: 0,
     VALUE: 1,
     ADD: 2,
@@ -37,7 +37,7 @@ const dataTypes = {
     MODULUS: 7
 };
 
-const statusTypes = {
+const StatusTypes = {
     OK: 'ok',
     ERROR: '?'
 };
@@ -49,7 +49,7 @@ const Token = (type, value, text) =>
 class Fvm {
     constructor() {
         this.stack = [];
-        this.status = statusTypes.OK;
+        this.status = StatusTypes.OK;
     }
 
     // main logic function of program
@@ -60,20 +60,20 @@ class Fvm {
             let t = this.parseWord(word);
 
             // invalid syntax
-            if (t.type == dataTypes.INVALID) {
-                this.status = statusTypes.ERROR;
+            if (t.type == MathTypes.INVALID) {
+                this.status = StatusTypes.ERROR;
                 throw new ParseError(t.text, word);
             }
 
             // push value onto stack
-            if (t.type == dataTypes.VALUE) {
+            if (t.type == MathTypes.VALUE) {
                 this.stack.push(t);
                 continue;
             }
 
             // empty stack error
             if (this.stack.length == 0) {
-                this.status = statusTypes.ERROR;
+                this.status = StatusTypes.ERROR;
                 throw new StackError('Stack underflow');
             }
             if (this.stack.length == 1) {
@@ -90,11 +90,11 @@ class Fvm {
             // but just in case??
             if (!isNaN(newVar)) {
                 this.stack.push(
-                    Token(dataTypes.VALUE, newVar, newVar.toString()));
+                    Token(MathTypes.VALUE, newVar, newVar.toString()));
             }
             
         }
-        this.status = statusTypes.OK;
+        this.status = StatusTypes.OK;
     }
 
     parseWord(text) {
@@ -102,32 +102,32 @@ class Fvm {
         let val = Number(data);
         
         if (!isNaN(val)) {
-            return Token(dataTypes.VALUE, val, data);
+            return Token(MathTypes.VALUE, val, data);
         }
     
         let type;
     
         switch (data) {
             case '+':
-                type = dataTypes.ADD;
+                type = MathTypes.ADD;
                 break;
             case '-':
-                type = dataTypes.SUB;
+                type = MathTypes.SUB;
                 break;
             case '*':
-                type = dataTypes.MUL;
+                type = MathTypes.MUL;
                 break;
             case '**':
-                type = dataTypes.POWER
+                type = MathTypes.POWER
                 break;
             case '/':
-                type = dataTypes.DIV;
+                type = MathTypes.DIV;
                 break;
             case '%':
-                type = dataTypes.MODULUS;
+                type = MathTypes.MODULUS;
                 break;
             default:
-                return Token(dataTypes.INVALID, undefined, 'Invalid word');
+                return Token(MathTypes.INVALID, undefined, 'Invalid word');
         }
     
         return Token(type, undefined, 'Operand');
@@ -136,20 +136,20 @@ class Fvm {
     // will either return a new number value
     operate(var1, var2, type) {
         switch (type) {
-            case dataTypes.ADD:
+            case MathTypes.ADD:
                 return var1 + var2;
-            case dataTypes.SUB:
+            case MathTypes.SUB:
                 return var1 - var2;
-            case dataTypes.MUL:
+            case MathTypes.MUL:
                 return var1 * var2;
-            case dataTypes.DIV:
+            case MathTypes.DIV:
                 if (var1 == 0 || var2 == 0) {
                     throw new OperationError('Divide by zero');
                 }
                 return var1 / var2;
-            case dataTypes.POWER:
+            case MathTypes.POWER:
                 return Math.pow(var2, var1);
-            case dataTypes.MODULUS:
+            case MathTypes.MODULUS:
                 return var1 % var2;
         }
     }

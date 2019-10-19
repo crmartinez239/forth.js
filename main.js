@@ -1,3 +1,5 @@
+"use strict";
+
 const fvm = new Fvm();
 
 const textbox = document.querySelector('input');
@@ -27,7 +29,7 @@ function handleEvent(e) {
             return;
         }
 
-        put(`${text}&nbsp;&nbsp;${fvm.status}`);
+        put(`${text}&nbsp;${fvm.output}&nbsp;&nbsp;${fvm.status}`);
     }
 }
 

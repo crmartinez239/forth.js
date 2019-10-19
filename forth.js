@@ -1,3 +1,5 @@
+"use strict";
+
 const ErrorTypes = {
     PARSE: 'ParseError',
     STACK: 'StackError',
@@ -49,20 +51,25 @@ const StatusTypes = {
 };
 
 const WordTypes = {
-    NUMBER: 1,
-    MATH: 2
+    DOT_S: 0,
+    DROP: 1,
+    DUP: 2,
+    NIP: 3,
+    OVER: 4,
+    TUCK: 5,
+    SWAP: 6
 }
 
 class Word {
-    constructor(rawText) {
+    constructor(rawText, callback) {
         this.rawText = rawText;
+        this.callback = callback
     }
 }
 
 class MathWord extends Word {
     constructor(rawText, type) {
-        super(rawText);
-        this.type = type
+        super(rawText, type);
     }
 }
 
@@ -79,17 +86,49 @@ class InvalidWord extends Word {
     }
 }
 
+
 class Fvm {
+
+
     constructor() {
         this.numberStack = [];
         this.status = StatusTypes.OK;
+        this.output = '';
+        
+        this.words = {
+            '.s': function(self) {
+                let stackString = self.stackToString();
+                let stackCount = self.numberStack.length;
+                self.output = `<${stackCount}> ${stackString}`;
+            },
+    
+            'drop': function(self){
+                self.checkStackUnderflow(0);
+                self.numberStack.pop();
+            },
+    
+            'dup': function(self) {
+                self.checkStackUnderflow(0);
+                let topNumber = self.numberStack[self.numberStack.length - 1];
+                self.numberStack.push(topNumber);      
+            },
+    
+            'nip': function(self) {
+                self.checkStackUnderflow(1);
+                let topNumber = self.numberStack.pop();
+                self.numberStack.pop();
+                self.numberStack.push(topNumber);
+            }
+        }
     }
 
     // main logic function of program
     // all checks and changes to stack should be performed here
     execute(text) {
-        const stream = text.split(' ').filter(word => word != '');
-        for (let word of stream) {
+        const wordStream = text.split(' ').filter(word => word != '');
+        this.output = '';
+
+        for (let word of wordStream) {
             const w = this.parseWord(word);
 
             if (w instanceof InvalidWord) {
@@ -106,8 +145,14 @@ class Fvm {
                 this.attemptMathOperation(w.type)
                 continue;
             }
+
+            if (w instanceof Word) {
+                w.callback(this);
+                continue;
+            }
             
         }
+
         this.status = StatusTypes.OK;
     }
 
@@ -124,7 +169,11 @@ class Fvm {
             return new MathWord(word, type)
         }
         
-        return new  InvalidWord(word);
+        if (word in this.words) {
+            return new Word(word, this.words[word])
+        }
+
+        return new InvalidWord(word);
     }
 
     // will either return a new number value
@@ -199,6 +248,13 @@ class Fvm {
         this.numberStack.push(newVar);
     }
 
+    checkStackUnderflow(equalToOrLessThan) {
+        if (this.numberStack.length <= equalToOrLessThan) {
+            this.status = StatusTypes.ERROR;
+            throw new StackError(ErrorMessages.STACK_UNDERFLOW);
+        }
+    }
+
     stackToString() {
         let ret = '';
         this.numberStack.forEach(n => {
@@ -207,10 +263,3 @@ class Fvm {
         return ret.trim();
     }
 }
-
-
-
-
-
-
-

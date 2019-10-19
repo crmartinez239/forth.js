@@ -50,16 +50,6 @@ const StatusTypes = {
     ERROR: '?'
 };
 
-const WordTypes = {
-    DOT_S: 0,
-    DROP: 1,
-    DUP: 2,
-    NIP: 3,
-    OVER: 4,
-    TUCK: 5,
-    SWAP: 6
-}
-
 class Word {
     constructor(rawText, callback) {
         this.rawText = rawText;
@@ -69,7 +59,8 @@ class Word {
 
 class MathWord extends Word {
     constructor(rawText, type) {
-        super(rawText, type);
+        super(rawText);
+        this.type = type;
     }
 }
 
@@ -118,6 +109,34 @@ class Fvm {
                 let topNumber = self.numberStack.pop();
                 self.numberStack.pop();
                 self.numberStack.push(topNumber);
+            },
+
+            'over': function(self) {
+                self.checkStackUnderflow(1);
+                let belowTop = self.numberStack[self.numberStack.length - 2];
+                self.numberStack.push(belowTop);
+            },
+
+            'tuck': function(self) {
+                self.checkStackUnderflow(1);
+                let topNumber = self.numberStack.pop();
+                let belowTop = self.numberStack.pop();
+                self.numberStack.push(topNumber, belowTop, topNumber);
+            },
+
+            'swap': function(self) {
+                self.checkStackUnderflow(1);
+                let topNumber = self.numberStack.pop();
+                let belowTop = self.numberStack.pop();
+                self.numberStack.push(topNumber, belowTop);
+            },
+
+            'pick': function(self) {
+                self.checkStackUnderflow(0);
+                let topNumber = self.numberStack.pop();
+                self.checkStackUnderflow(topNumber);
+                let pickedNumber = self.numberStack[(self.numberStack.length - 1) - topNumber];
+                self.numberStack.push(pickedNumber);
             }
         }
     }

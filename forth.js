@@ -137,12 +137,42 @@ class Fvm {
                 self.checkStackUnderflow(topNumber);
                 let pickedNumber = self.numberStack[(self.numberStack.length - 1) - topNumber];
                 self.numberStack.push(pickedNumber);
+            },
+
+            'rot': function(self) {
+                self.checkStackUnderflow(2);
+                let topNumber = self.numberStack.pop();
+                let middleNumber = self.numberStack.pop();
+                let bottomNumber = self.numberStack.pop();
+                self.numberStack.push(middleNumber, topNumber, bottomNumber);
+            },
+
+            '-rot': function(self) {
+                self.checkStackUnderflow(2);
+                let topNumber = self.numberStack.pop();
+                let middleNumber = self.numberStack.pop();
+                let bottomNumber = self.numberStack.pop();
+                self.numberStack.push(topNumber, bottomNumber, middleNumber);
+            },
+
+            '?dup': function(self) {
+                self.checkStackUnderflow(0);
+                let topNumber = self.numberStack[self.numberStack.length - 1];
+                if (topNumber) {
+                    self.numberStack.push(topNumber);
+                }
+            },
+
+            'roll': function(self) {
+                self.checkStackUnderflow(0);
+                let rollAmount = self.numberStack.pop();
+                self.checkStackUnderflow(rollAmount);
+                
             }
         }
     }
 
     // main logic function of program
-    // all checks and changes to stack should be performed here
     execute(text) {
         const wordStream = text.split(' ').filter(word => word != '');
         this.output = '';
@@ -195,7 +225,6 @@ class Fvm {
         return new InvalidWord(word);
     }
 
-    // will either return a new number value
     operate(var1, var2, type) {
         switch (type) {
             case MathTypes.ADD:

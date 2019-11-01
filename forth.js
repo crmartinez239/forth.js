@@ -168,8 +168,40 @@ class Fvm {
                 let rollAmount = self.numberStack.pop();
                 self.checkStackUnderflow(rollAmount);
                 
+            },
+
+            '2drop': function(self) {
+                self.checkStackUnderflow(1);
+                self.numberStack.pop();
+                self.numberStack.pop();
+            },
+
+            '2nip': function(self) {
+                self.checkStackUnderflow(3);
+                let topNumber = self.numberStack.pop();
+                let belowTop = self.numberStack.pop();
+                self.numberStack.pop();
+                self.numberStack.pop();
+                self.numberStack.push(belowTop, topNumber);
+            },
+
+            '2dup': function(self) {
+                self.checkStackUnderflow(1);
+                let topNumber = self.numberStack.pop();
+                let belowTop = self.numberStack.pop();
+                self.numberStack.push(belowTop, topNumber, belowTop, topNumber);
+            },
+
+            '2over': function(self) {
+                self.checkStackUnderflow(3);
+                let len = self.numberStack.length
+                let bottomNumber = self.numberStack[len - 4];
+                let topNumber = self.numberStack[len - 3];
+                self.numberStack.push(bottomNumber, topNumber);
             }
+
         }
+
     }
 
     // main logic function of program

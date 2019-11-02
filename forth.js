@@ -80,7 +80,6 @@ class InvalidWord extends Word {
 
 class Fvm {
 
-
     constructor() {
         this.numberStack = [];
         this.status = StatusTypes.OK;
@@ -100,35 +99,35 @@ class Fvm {
     
             'dup': function(self) {
                 self.checkStackUnderflow(0);
-                let topNumber = self.numberStack[self.numberStack.length - 1];
-                self.numberStack.push(topNumber);      
+                let w = self.numberStack[self.numberStack.length - 1];
+                self.numberStack.push(w);      
             },
     
             'nip': function(self) {
                 self.checkStackUnderflow(1);
-                let topNumber = self.numberStack.pop();
-                self.numberStack.pop();
-                self.numberStack.push(topNumber);
+                let w2 = self.numberStack.pop();
+                self.numberStack.pop(); // w1
+                self.numberStack.push(w2);
             },
 
             'over': function(self) {
                 self.checkStackUnderflow(1);
-                let belowTop = self.numberStack[self.numberStack.length - 2];
-                self.numberStack.push(belowTop);
+                let w1 = self.numberStack[self.numberStack.length - 2];
+                self.numberStack.push(w1);
             },
 
             'tuck': function(self) {
                 self.checkStackUnderflow(1);
-                let topNumber = self.numberStack.pop();
-                let belowTop = self.numberStack.pop();
-                self.numberStack.push(topNumber, belowTop, topNumber);
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
+                self.numberStack.push(w2, w1, w2);
             },
 
             'swap': function(self) {
                 self.checkStackUnderflow(1);
-                let topNumber = self.numberStack.pop();
-                let belowTop = self.numberStack.pop();
-                self.numberStack.push(topNumber, belowTop);
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
+                self.numberStack.push(w2, w1);
             },
 
             'pick': function(self) {
@@ -141,18 +140,18 @@ class Fvm {
 
             'rot': function(self) {
                 self.checkStackUnderflow(2);
-                let topNumber = self.numberStack.pop();
-                let middleNumber = self.numberStack.pop();
-                let bottomNumber = self.numberStack.pop();
-                self.numberStack.push(middleNumber, topNumber, bottomNumber);
+                let w3 = self.numberStack.pop();
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
+                self.numberStack.push(w2, w3, w1);
             },
 
             '-rot': function(self) {
                 self.checkStackUnderflow(2);
-                let topNumber = self.numberStack.pop();
-                let middleNumber = self.numberStack.pop();
-                let bottomNumber = self.numberStack.pop();
-                self.numberStack.push(topNumber, bottomNumber, middleNumber);
+                let w3 = self.numberStack.pop();
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
+                self.numberStack.push(w3, w1, w2);
             },
 
             '?dup': function(self) {
@@ -172,56 +171,53 @@ class Fvm {
 
             '2drop': function(self) {
                 self.checkStackUnderflow(1);
-                self.numberStack.pop();
-                self.numberStack.pop();
+                self.numberStack.pop(); // w2
+                self.numberStack.pop(); // w1
             },
 
             '2nip': function(self) {
                 self.checkStackUnderflow(3);
-                let topNumber = self.numberStack.pop();
-                let belowTop = self.numberStack.pop();
-                self.numberStack.pop();
-                self.numberStack.pop();
-                self.numberStack.push(belowTop, topNumber);
+                let w4 = self.numberStack.pop();
+                let w3 = self.numberStack.pop();
+                self.numberStack.pop(); // w2
+                self.numberStack.pop(); // w1
+                self.numberStack.push(w3, w4);
             },
 
             '2dup': function(self) {
                 self.checkStackUnderflow(1);
-                let topNumber = self.numberStack.pop();
-                let belowTop = self.numberStack.pop();
-                self.numberStack.push(belowTop, topNumber, belowTop, topNumber);
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
+                self.numberStack.push(w1, w2, w1, w2);
             },
 
             '2over': function(self) {
                 self.checkStackUnderflow(3);
                 let len = self.numberStack.length
-                let bottomNumber = self.numberStack[len - 4];
-                let topNumber = self.numberStack[len - 3];
-                self.numberStack.push(bottomNumber, topNumber);
+                let w1 = self.numberStack[len - 4];
+                let w2 = self.numberStack[len - 3];
+                self.numberStack.push(w1, w2);
             },
 
             '2tuck': function(self) {
                 self.checkStackUnderflow(3);
-                let topNumber = self.numberStack.pop();
-                let belowTop = self.numberStack.pop();
-                let aboveBottom = self.numberStack.pop();
-                let bottomNumber = self.numberStack.pop();
+                let w4 = self.numberStack.pop();
+                let w3 = self.numberStack.pop();
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
                 self.numberStack.push (
-                    belowTop, topNumber, 
-                    bottomNumber, aboveBottom, 
-                    belowTop, topNumber
+                    w3, w4, w1, w2, w3, w4
                 );
             },
 
             '2swap': function(self) {
                 self.checkStackUnderflow(3);
-                let topNumber = self.numberStack.pop();
-                let belowTop = self.numberStack.pop();
-                let aboveBottom = self.numberStack.pop();
-                let bottomNumber = self.numberStack.pop();
+                let w4 = self.numberStack.pop();
+                let w3 = self.numberStack.pop();
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
                 self.numberStack.push (
-                    belowTop, topNumber, 
-                    bottomNumber, aboveBottom
+                    w3, w4, w1, w2
                 );
             },
 

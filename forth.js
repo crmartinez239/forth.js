@@ -198,6 +198,44 @@ class Fvm {
                 let bottomNumber = self.numberStack[len - 4];
                 let topNumber = self.numberStack[len - 3];
                 self.numberStack.push(bottomNumber, topNumber);
+            },
+
+            '2tuck': function(self) {
+                self.checkStackUnderflow(3);
+                let topNumber = self.numberStack.pop();
+                let belowTop = self.numberStack.pop();
+                let aboveBottom = self.numberStack.pop();
+                let bottomNumber = self.numberStack.pop();
+                self.numberStack.push (
+                    belowTop, topNumber, 
+                    bottomNumber, aboveBottom, 
+                    belowTop, topNumber
+                );
+            },
+
+            '2swap': function(self) {
+                self.checkStackUnderflow(3);
+                let topNumber = self.numberStack.pop();
+                let belowTop = self.numberStack.pop();
+                let aboveBottom = self.numberStack.pop();
+                let bottomNumber = self.numberStack.pop();
+                self.numberStack.push (
+                    belowTop, topNumber, 
+                    bottomNumber, aboveBottom
+                );
+            },
+
+            '2rot': function(self) {
+                self.checkStackUnderflow(5);
+                let w6 = self.numberStack.pop();
+                let w5 = self.numberStack.pop();
+                let w4 = self.numberStack.pop();
+                let w3 = self.numberStack.pop();
+                let w2 = self.numberStack.pop();
+                let w1 = self.numberStack.pop();
+                self.numberStack.push (
+                    w3, w4, w5, w6, w1, w2
+                );
             }
 
         }

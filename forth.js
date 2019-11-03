@@ -50,6 +50,12 @@ const StatusTypes = {
     ERROR: '?'
 };
 
+const ForthState = {
+    NORMAL: 0,
+    COMMENT: 1,
+    COMPILE: 2
+}
+
 class Word {
     constructor(rawText, callback) {
         this.rawText = rawText;
@@ -83,10 +89,9 @@ class Fvm {
     constructor() {
         this.dataStack = [];
         this.status = StatusTypes.OK;
+        this.state = ForthState.NORMAL;
         this.output = '';
-        
-        this.words = {...dataStackWords}
-
+        this.words = {...coreWords, ...dataStackWords}
     }
 
     // main logic function of program
@@ -96,6 +101,10 @@ class Fvm {
 
         for (let word of wordStream) {
             const w = this.parseWord(word);
+
+            if (this.state === ForthState.COMMENT) {
+                
+            }
 
             if (w instanceof InvalidWord) {
                 this.status = StatusTypes.ERROR;
@@ -120,6 +129,7 @@ class Fvm {
         }
 
         this.status = StatusTypes.OK;
+        this.state = ForthState.NORMAL;
     }
 
     parseWord(text) {

@@ -113,7 +113,7 @@ class Fvm {
             }
 
             if (w instanceof Word) {
-                w.callback(this);
+                w.callback.call(this);
                 continue;
             }
             

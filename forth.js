@@ -51,7 +51,7 @@ const StatusTypes = {
 };
 
 const ForthState = {
-    NORMAL: 0,
+    INTERPRET: 0,
     COMMENT: 1,
     COMPILE: 2
 }
@@ -89,7 +89,7 @@ class Fvm {
     constructor() {
         this.dataStack = [];
         this.status = StatusTypes.OK;
-        this.state = ForthState.NORMAL;
+        this.state = ForthState.INTERPRET;
         this.output = '';
         this.words = {...coreWords, ...dataStackWords}
     }
@@ -104,7 +104,7 @@ class Fvm {
 
             this.checkForComment(w);
 
-            if (this.state === ForthState.NORMAL) {
+            if (this.state === ForthState.INTERPRET) {
                 if (w instanceof InvalidWord) {
                     this.status = StatusTypes.ERROR;
                     throw new ParseError(ErrorMessages.INVALID_WORD, w.rawText)
@@ -129,7 +129,7 @@ class Fvm {
         }
 
         this.status = StatusTypes.OK;
-        this.state = ForthState.NORMAL;
+        this.state = ForthState.INTERPRET;
     }
 
     parseWord(text) {

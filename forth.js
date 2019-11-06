@@ -102,28 +102,28 @@ class Fvm {
         for (let word of wordStream) {
             const w = this.parseWord(word);
 
-            if (this.state === ForthState.COMMENT) {
-                
-            }
+            this.checkForComment(w);
 
-            if (w instanceof InvalidWord) {
-                this.status = StatusTypes.ERROR;
-                throw new ParseError(ErrorMessages.INVALID_WORD, w.rawText)
-            }
-
-            if (w instanceof NumberWord) {
-                this.dataStack.push(w.value);
-                continue;
-            }
-
-            if (w instanceof MathWord) {
-                this.attemptMathOperation(w.type)
-                continue;
-            }
-
-            if (w instanceof Word) {
-                w.callback.call(this);
-                continue;
+            if (this.state === ForthState.NORMAL) {
+                if (w instanceof InvalidWord) {
+                    this.status = StatusTypes.ERROR;
+                    throw new ParseError(ErrorMessages.INVALID_WORD, w.rawText)
+                }
+    
+                if (w instanceof NumberWord) {
+                    this.dataStack.push(w.value);
+                    continue;
+                }
+    
+                if (w instanceof MathWord) {
+                    this.attemptMathOperation(w.type)
+                    continue;
+                }
+    
+                if (w instanceof Word) {
+                    w.callback.call(this);
+                    continue;
+                }
             }
             
         }
@@ -227,6 +227,12 @@ class Fvm {
         if (this.dataStack.length <= equalToOrLessThan) {
             this.status = StatusTypes.ERROR;
             throw new StackError(ErrorMessages.STACK_UNDERFLOW);
+        }
+    }
+
+    checkForComment(word) {
+        if (word.rawText === '(' || word.rawText === ')') {
+            word.callback.call(this)
         }
     }
 

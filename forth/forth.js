@@ -16,7 +16,7 @@ export class Fvm {
 
     // main logic function of program
     execute(text) {
-        const wordStream = text.split(' ').filter(word => word != '');
+        const wordStream = text.split(' ').filter(word => word !== '');
         this.output = '';
 
         for (let word of wordStream) {
@@ -42,7 +42,6 @@ export class Fvm {
     
                 if (w instanceof words.Word) {
                     w.callback.call(this);
-                    continue;
                 }
             }
             
@@ -81,7 +80,7 @@ export class Fvm {
             case types.MathTypes.MUL:
                 return var1 * var2;
             case types. MathTypes.DIV:
-                if (var1 == 0 || var2 == 0) {
+                if (var1 === 0 || var2 === 0) {
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
                 return var1 / var2;
@@ -125,12 +124,12 @@ export class Fvm {
 
     attemptMathOperation(type) {
         // empty stack error
-        if (this.dataStack.length == 0) {
+        if (this.dataStack.length === 0) {
             this.status = types.StatusTypes.ERROR;
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
         
-        if (this.dataStack.length == 1) {
+        if (this.dataStack.length === 1) {
             this.dataStack.pop();
             return;
         }

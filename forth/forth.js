@@ -1,36 +1,15 @@
 "use strict";
 
+import * as types from './types/types.js';
 import * as errors from './errors/errors.js';
 import * as words from './words';
-
-const MathTypes = {
-    INVALID: 0,
-    VALUE: 1,
-    ADD: 2,
-    SUB: 3,
-    MUL: 4,
-    DIV: 5,
-    POWER: 6,
-    MODULUS: 7
-};
-
-const StatusTypes = {
-    OK: 'ok',
-    ERROR: '?'
-};
-
-const ForthState = {
-    INTERPRET: 0,
-    COMMENT: 1,
-    COMPILE: 2
-}
 
 export class Fvm {
 
     constructor() {
         this.dataStack = [];
-        this.status = StatusTypes.OK;
-        this.state = ForthState.INTERPRET;
+        this.status = types.StatusTypes.OK;
+        this.state = types.ForthState.INTERPRET;
         this.output = '';
         this.words = {...words.core, ...words.dataStack}
     }
@@ -45,9 +24,9 @@ export class Fvm {
 
             this.checkForComment(w);
 
-            if (this.state === ForthState.INTERPRET) {
+            if (this.state === types.ForthState.INTERPRET) {
                 if (w instanceof words.InvalidWord) {
-                    this.status = StatusTypes.ERROR;
+                    this.status = types.StatusTypes.ERROR;
                     throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD, w.rawText)
                 }
     
@@ -69,8 +48,8 @@ export class Fvm {
             
         }
 
-        this.status = StatusTypes.OK;
-        this.state = ForthState.INTERPRET;
+        this.status = types.StatusTypes.OK;
+        this.state = types.ForthState.INTERPRET;
     }
 
     parseWord(text) {
@@ -95,20 +74,20 @@ export class Fvm {
 
     operate(var1, var2, type) {
         switch (type) {
-            case MathTypes.ADD:
+            case types.MathTypes.ADD:
                 return var1 + var2;
-            case MathTypes.SUB:
+            case types.MathTypes.SUB:
                 return var1 - var2;
-            case MathTypes.MUL:
+            case types.MathTypes.MUL:
                 return var1 * var2;
-            case MathTypes.DIV:
+            case types. MathTypes.DIV:
                 if (var1 == 0 || var2 == 0) {
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
                 return var1 / var2;
-            case MathTypes.POWER:
+            case types.MathTypes.POWER:
                 return Math.pow(var2, var1);
-            case MathTypes.MODULUS:
+            case types.MathTypes.MODULUS:
                 return var1 % var2;
         }
     }
@@ -130,25 +109,25 @@ export class Fvm {
     getMathOperatorType(word) {
         switch (word) {
             case '+':
-                return MathTypes.ADD;
+                return types.MathTypes.ADD;
             case '-':
-                return MathTypes.SUB;
+                return types.MathTypes.SUB;
             case '*':
-                return MathTypes.MUL;
+                return types.MathTypes.MUL;
             case '**':
-                return MathTypes.POWER
+                return types.MathTypes.POWER
             case '/':
-                return MathTypes.DIV;
+                return types.MathTypes.DIV;
             case '%':
-                return MathTypes.MODULUS;
+                return types.MathTypes.MODULUS;
         }
     }
 
     attemptMathOperation(type) {
         // empty stack error
         if (this.dataStack.length == 0) {
-            this.status = StatusTypes.ERROR;
-            throw new StackError(ErrorMessages.STACK_UNDERFLOW);
+            this.status = types.StatusTypes.ERROR;
+            throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
         
         if (this.dataStack.length == 1) {
@@ -166,7 +145,7 @@ export class Fvm {
 
     checkStackUnderflow(equalToOrLessThan) {
         if (this.dataStack.length <= equalToOrLessThan) {
-            this.status = StatusTypes.ERROR;
+            this.status = types.StatusTypes.ERROR;
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }

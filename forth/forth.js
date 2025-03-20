@@ -65,7 +65,7 @@ export class Fvm {
         this.status = StatusTypes.OK;
         this.state = ForthState.INTERPRET;
         this.output = '';
-        this.words = {...words.coreWords, ...words.dataStackWords}
+        this.words = {...words.core, ...words.dataStack}
     }
 
     // main logic function of program

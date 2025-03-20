@@ -1,4 +1,4 @@
-export const coreWords = {
+export const core = {
     '(': function() {
         this.state = ForthState.COMMENT;
     },

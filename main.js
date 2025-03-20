@@ -1,8 +1,9 @@
 "use strict";
-import { Fvm } from './forth/forth.js';
 
+import { ErrorTypes } from './forth/errors/errors.js';
+import * as forth from './forth/forth.js';
 
-const fvm = new Fvm();
+const fvm = new forth.Fvm();
 
 const textbox = document.querySelector('input');
 textbox.onkeyup = handleEvent;

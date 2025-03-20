@@ -87,7 +87,7 @@ class InvalidWord extends Word {
 }
 
 
-class Fvm {
+export class Fvm {
 
     constructor() {
         this.dataStack = [];

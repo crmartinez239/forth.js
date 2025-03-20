@@ -1,4 +1,4 @@
-const dataStackWords = {
+export const dataStackWords = {
     '.s': function() {
         const stackString = this.stackToString();
         const stackCount = this.dataStack.length;

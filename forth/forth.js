@@ -1,7 +1,7 @@
 "use strict";
 
-import { coreWords } from './core.js';
-import { dataStackWords } from './dataStack.js';
+import { coreWords } from './words/core.js';
+import { dataStackWords } from './words/dataStack.js';
 
 const ErrorTypes = {
     PARSE: 'ParseError',

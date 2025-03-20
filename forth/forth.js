@@ -1,7 +1,6 @@
 "use strict";
 
-import { coreWords } from './words/core.js';
-import { dataStackWords } from './words/dataStack.js';
+import * as words from './words';
 
 const ErrorTypes = {
     PARSE: 'ParseError',
@@ -59,34 +58,6 @@ const ForthState = {
     COMPILE: 2
 }
 
-class Word {
-    constructor(rawText, callback) {
-        this.rawText = rawText;
-        this.callback = callback
-    }
-}
-
-class MathWord extends Word {
-    constructor(rawText, type) {
-        super(rawText);
-        this.type = type;
-    }
-}
-
-class NumberWord extends Word {
-    constructor(rawText, value) {
-        super(rawText);
-        this.value = value;
-    }
-}
-
-class InvalidWord extends Word {
-    constructor(rawText) {
-        super(rawText);
-    }
-}
-
-
 export class Fvm {
 
     constructor() {
@@ -94,7 +65,7 @@ export class Fvm {
         this.status = StatusTypes.OK;
         this.state = ForthState.INTERPRET;
         this.output = '';
-        this.words = {...coreWords, ...dataStackWords}
+        this.words = {...words.coreWords, ...words.dataStackWords}
     }
 
     // main logic function of program
@@ -108,22 +79,22 @@ export class Fvm {
             this.checkForComment(w);
 
             if (this.state === ForthState.INTERPRET) {
-                if (w instanceof InvalidWord) {
+                if (w instanceof words.InvalidWord) {
                     this.status = StatusTypes.ERROR;
                     throw new ParseError(ErrorMessages.INVALID_WORD, w.rawText)
                 }
     
-                if (w instanceof NumberWord) {
+                if (w instanceof words.NumberWord) {
                     this.dataStack.push(w.value);
                     continue;
                 }
     
-                if (w instanceof MathWord) {
+                if (w instanceof words.MathWord) {
                     this.attemptMathOperation(w.type)
                     continue;
                 }
     
-                if (w instanceof Word) {
+                if (w instanceof words.Word) {
                     w.callback.call(this);
                     continue;
                 }
@@ -140,19 +111,19 @@ export class Fvm {
         let val = Number(word);
         
         if (!isNaN(val)) {
-            return new NumberWord(word, val)
+            return new words.NumberWord(word, val)
         }
     
         if (this.isMathOperator(word)) {
             const type = this.getMathOperatorType(word)
-            return new MathWord(word, type)
+            return new words.MathWord(word, type)
         }
         
         if (word in this.words) {
-            return new Word(word, this.words[word])
+            return new words.Word(word, this.words[word])
         }
 
-        return new InvalidWord(word);
+        return new words.InvalidWord(word);
     }
 
     operate(var1, var2, type) {

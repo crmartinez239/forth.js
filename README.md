@@ -9,4 +9,4 @@ Yet another Forth implementation in JavaScript.
 All gforth data stack words are implemented. To see the list and description of words go to https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
 
 ## Deployment
-https://crmartinez239.github.io/forth.js/
+https://crmartinez239.github.io/forth.js/demo

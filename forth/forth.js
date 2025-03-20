@@ -1,40 +1,7 @@
 "use strict";
 
+import * as errors from './errors/errors.js';
 import * as words from './words';
-
-const ErrorTypes = {
-    PARSE: 'ParseError',
-    STACK: 'StackError',
-    OPERATION: 'OperationError'
-};
-
-const ErrorMessages = {
-    INVALID_WORD: 'Invalid word',
-    STACK_UNDERFLOW: 'Stack underflow',
-    DIV_BY_ZERO: 'Divide by zero'
-}
-
-class ParseError extends Error {
-    constructor(message, rawText) {
-        super(message);
-        this.name = ErrorTypes.PARSE;
-        this.rawText = rawText;
-    }
-}
-
-class StackError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = ErrorTypes.STACK;
-    }
-}
-
-class OperationError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = ErrorTypes.OPERATION;
-    }
-}
 
 const MathTypes = {
     INVALID: 0,
@@ -81,7 +48,7 @@ export class Fvm {
             if (this.state === ForthState.INTERPRET) {
                 if (w instanceof words.InvalidWord) {
                     this.status = StatusTypes.ERROR;
-                    throw new ParseError(ErrorMessages.INVALID_WORD, w.rawText)
+                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD, w.rawText)
                 }
     
                 if (w instanceof words.NumberWord) {
@@ -136,7 +103,7 @@ export class Fvm {
                 return var1 * var2;
             case MathTypes.DIV:
                 if (var1 == 0 || var2 == 0) {
-                    throw new OperationError(ErrorMessages.DIV_BY_ZERO);
+                    throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
                 return var1 / var2;
             case MathTypes.POWER:
@@ -200,7 +167,7 @@ export class Fvm {
     checkStackUnderflow(equalToOrLessThan) {
         if (this.dataStack.length <= equalToOrLessThan) {
             this.status = StatusTypes.ERROR;
-            throw new StackError(ErrorMessages.STACK_UNDERFLOW);
+            throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
 

@@ -2,7 +2,7 @@
 
 import * as types from './types/types.js';
 import * as errors from './errors/errors.js';
-import * as words from './words';
+import * as words from './words/index.js';
 
 export class Fvm {
 

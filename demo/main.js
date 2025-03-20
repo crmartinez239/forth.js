@@ -1,7 +1,7 @@
 "use strict";
 
-import { ErrorTypes } from './forth/errors/errors.js';
-import * as forth from './forth/forth.js';
+import { ErrorTypes } from '../forth/errors/errors.js';
+import * as forth from '../forth/forth.js';
 
 const fvm = new forth.Fvm();
 

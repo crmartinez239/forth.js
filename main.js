@@ -1,4 +1,6 @@
 "use strict";
+import { Fvm } from './forth/forth.js';
+
 
 const fvm = new Fvm();
 
